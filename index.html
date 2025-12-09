@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Photo Editor</title>
+</head>
+
+<body>
+    <h2>Photo Editor (HTML + JS only)</h2>
+
+    <!-- Image Upload -->
+    <input type="file" id="upload" accept="image/*"><br><br>
+
+    <!-- Canvas to Show and Edit Image -->
+    <canvas id="canvas" width="500" height="400" style="border:1px solid #000;"></canvas><br><br>
+
+    <!-- Filter Controls -->
+    <label>Grayscale: <input type="range" id="grayscale" min="0" max="100" value="0"></label><br>
+    <label>Brightness: <input type="range" id="brightness" min="0" max="200" value="100"></label><br>
+    <label>Contrast: <input type="range" id="contrast" min="0" max="200" value="100"></label><br><br>
+
+    <!-- Buttons -->
+    <button onclick="resetFilters()">Reset</button>
+    <button onclick="downloadImage()">Download</button>
+
+    <script>
+        const upload = document.getElementById('upload');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let image = new Image();
+
+        const filters = {
+            grayscale: document.getElementById('grayscale'),
+            brightness: document.getElementById('brightness'),
+            contrast: document.getElementById('contrast')
+        };
+
+        // Load Image
+        upload.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    image.onload = () => drawImage();
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Draw image with current filters
+        function drawImage() {
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.filter = getFilterStyle();
+            ctx.drawImage(image, 0, 0);
+        }
+
+        // Get current filter styles
+        function getFilterStyle() {
+            return `
+        grayscale(${filters.grayscale.value}%)
+        brightness(${filters.brightness.value}%)
+        contrast(${filters.contrast.value}%)
+      `;
+        }
+
+        // Update filters
+        Object.values(filters).forEach(input => {
+            input.addEventListener('input', () => {
+                drawImage();
+            });
+        });
+
+        // Reset filters
+        function resetFilters() {
+            filters.grayscale.value = 0;
+            filters.brightness.value = 100;
+            filters.contrast.value = 100;
+            drawImage();
+        }
+
+        // Download image
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = 'edited-image.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
+</body>
+
+</html>
