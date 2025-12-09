@@ -1,0 +1,3 @@
+- This is small photo editor that is developed using only HTML AND java scritp.
+- In this project user can edit a photo based on the 3 features they are grayscale, brightness and contrast.
+- Once you are done with editing, you can download the image and if you are not satisfied with the your own edit then reset option is also available.
